@@ -12,24 +12,46 @@
 // [] 클릭이벤트에서 closest li 태그의 class속성에 sold-out 추가한다
 
 const $ = (selector) => document.querySelector(selector);
-const storage = {
-  setLocalStorage(menu) {
-    localStorage.setItem("menu", JSON.stringify(menu));
-  },
-  getLocalStorage() {
-    localStorage.getItem("menu");
-  },
-};
+
 
 function App() {
   this.menu = [];
-
+  let setItem = (menu) => {
+    localStorage.setItem("menu", JSON.stringify(this.menu));
+  } 
+  
   // count 세기
   const updateMenuCount = () => {
     let count = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${count}개`;
   };
 
+
+  const render = () => {
+    const template = menu.map((item, index) => {
+      return `<li id="${index}" class="menu-list-item d-flex items-center py-2">
+  <span class="w-100 pl-2 menu-name">${item.name}</span>
+  <button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button">
+    수정
+  </button>
+  <button type="button" class="bg-gray-50 text-gray-500 text-sm menu-remove-button">
+    삭제
+  </button>
+</li>`;
+    })
+    .join("");
+
+  // 리스트 추가할때마다 inserAdjacentHTML
+  // $("#espresso-menu-list").insertAdjacentHTML(
+  //   "beforeend",
+  //   template(inputValue)
+  // );
+
+  // 리스트 추가
+  $("#espresso-menu-list").innerHTML = template;
+  // 리스트 갯수 세기
+  updateMenuCount();
+  }
   // 메뉴 추가
   const addMenu = () => {
     if ($("#espresso-menu-input").value === "") {
@@ -38,45 +60,33 @@ function App() {
     }
     const inputValue = $("#espresso-menu-input").value;
     this.menu.push({ name: inputValue });
-    storage.setLocalStorage(this.menu);
-    const template = menu
-      .map((item) => {
-        return `<li class="menu-list-item d-flex items-center py-2">
-    <span class="w-100 pl-2 menu-name">${item.name}</span>
-    <button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button">
-      수정
-    </button>
-    <button type="button" class="bg-gray-50 text-gray-500 text-sm menu-remove-button">
-      삭제
-    </button>
-  </li>`;
-      })
-      .join("");
-
-    // 리스트 추가할때마다 inserAdjacentHTML
-    // $("#espresso-menu-list").insertAdjacentHTML(
-    //   "beforeend",
-    //   template(inputValue)
-    // );
-
-    // 리스트 추가
-    $("#espresso-menu-list").innerHTML = template;
-    // 리스트 갯수 세기
-    updateMenuCount();
+    setItem(this.menu);
+    render();
     // 메뉴 추가 후 input창 빈값으로 초기화
     $("#espresso-menu-input").value = "";
+    console.log(menu)
+
   };
 
   // 메뉴 수정
   const modifyMenu = (e) => {
     const menuName = e.target.closest("li").querySelector(".menu-name");
+    const menuId = e.target.closest("li").id
     const modifiedMenu = prompt("메뉴명을 수정해주세요", menuName.innerText);
+    if (modifiedMenu == null) {
+      return;
+    }
+    this.menu[menuId].name = modifiedMenu;
     menuName.innerText = modifiedMenu;
+    setItem(this.menu);
   };
 
   // 메뉴 삭제
   const removeMenu = (e) => {
     if (confirm("일정을 삭제하시겠습니까?")) {
+      const menuId = e.target.closest("li").id  
+      this.menu.splice(menuId, 1);
+      setItem(this.menu);
       e.target.closest("li").remove();
       updateMenuCount();
     }
@@ -105,5 +115,13 @@ function App() {
       addMenu();
     }
   });
+  
+  // 새로고침 랜더링 로컬스토리지에서 가져오기
+  let savedMenu = localStorage.getItem('menu')
+  parsedMenu = JSON.parse(savedMenu)
+  if (parsedMenu !== null) {
+    this.menu = parsedMenu;
+    render();
+  }
 }
 App();
