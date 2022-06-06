@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
 html,
 body {
   margin: 0;
@@ -7,6 +9,68 @@ body {
   line-height: 1.5;
   background-color: #f1f5f9;
 }
+
+h1 {
+  font-family: 'Lobster', cursive;
+  font-size: 3rem;
+}
+.input-form{
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-form input {
+  border-radius: 2rem;  
+  padding: 10px 20px;
+  width: 400px;
+  border: 1px solid transparent;  
+  background-color: rgb(240, 240, 240);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.input-form input:focus {
+  outline: none;
+}
+
+.input-form input:hover {
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.input-form button {
+  border-radius: 2rem; 
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  background-color: cadetblue;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.input-form button:hover {
+  background-color: #2EE59D;
+  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+  color: #fff;
+  transform: translateY(-2px);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+}
+
+.cafe-category-name{
+  border: 1px solid transparent;
+  background-color: white;
+  border-radius: .25rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  margin: 2px 4px;
+  padding: .5rem .5rem;
+}
+
+.cafe-category-name:hover{
+  border: 1px solid transparent;
+  background-color: rgb(248, 232, 201);
+  box-shadow: 0px 15px 20px rgba(248, 232, 201, 0.4);
+  color: #000;
+  transform: translateY(-2px);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+} 
 
 #app {
   max-width: 960px;
@@ -22,7 +86,7 @@ main .wrapper {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border-radius: 4px;
-  padding: 20px;
+  padding: 20px 30px 20px 20px;
 }
 
 hr {
@@ -40,10 +104,17 @@ ul li button {
   border: none;
   outline: none;
   border-radius: 2rem;  
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  margin-right: 5px;
 }
 
 ul li button:hover {
-  background-color: rgb(229, 231, 235);
+  background-color: aliceblue;
+  box-shadow: 0px 15px 20px rgba(100, 100, 100, 0.4);
+  color: #000;
+  transform: translateY(-2px);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
 }
 
 .sold-out {
@@ -62,6 +133,11 @@ h2 {
   height: 60px;
 }
 
+#menu-title span {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 0;
+}
 
 /* <!--========================================================
                               HEADER

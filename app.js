@@ -13,24 +13,31 @@
 
 const $ = (selector) => document.querySelector(selector);
 
-
 function App() {
-  this.menu = [];
+  this.menu = {
+    espresso: [],
+    frappuccino: [],
+    blended: [],
+    teavana: [],
+    desert: [],
+  }
+  this.mode = 'espresso';
+
   let setItem = (menu) => {
     localStorage.setItem("menu", JSON.stringify(this.menu));
-  } 
-  
+  };
+
   // count 세기
   const updateMenuCount = () => {
     let count = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${count}개`;
   };
 
-
   const render = () => {
-    const template = menu.map((item, index) => {
-      return `<li id="${index}" class="menu-list-item d-flex items-center py-2">
-  <span class="w-100 pl-2 menu-name">${item.name}</span>
+    const template = menu[mode]
+      .map((item, index) => {
+        return `<li id="${index}" class="menu-list-item d-flex items-center py-2">
+  <span class="w-100 pl-2 menu-name">${item}</span>
   <button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button">
     수정
   </button>
@@ -38,45 +45,54 @@ function App() {
     삭제
   </button>
 </li>`;
-    })
-    .join("");
+      })
+      .join("");
 
-  // 리스트 추가할때마다 inserAdjacentHTML
-  // $("#espresso-menu-list").insertAdjacentHTML(
-  //   "beforeend",
-  //   template(inputValue)
-  // );
+    // 리스트 추가할때마다 inserAdjacentHTML
+    // $("#espresso-menu-list").insertAdjacentHTML(
+    //   "beforeend",
+    //   template(inputValue)
+    // );
 
-  // 리스트 추가
-  $("#espresso-menu-list").innerHTML = template;
-  // 리스트 갯수 세기
-  updateMenuCount();
-  }
+    // 리스트 추가
+    $("#espresso-menu-list").innerHTML = template;
+    // 리스트 갯수 세기
+    updateMenuCount();
+  };
+
   // 메뉴 추가
   const addMenu = () => {
+    // 공백 입력시 함수가 끝나게 한다
+    let blank_pattern = /^\s+|\s+$/g;
+    if ($("#espresso-menu-input").value.replace(blank_pattern, "") === "") {
+      alert("Please enter the menu");
+      $("#espresso-menu-input").value = "";
+      return;
+    }
+    // 입력 값이 없을 시 함수가 끝나게 한다
     if ($("#espresso-menu-input").value === "") {
       alert("Please enter the menu");
-      return; // 함수가 끝나게 한다
+      return;
     }
+    // 입력값이 정상일 경우
     const inputValue = $("#espresso-menu-input").value;
-    this.menu.push({ name: inputValue });
+    this.menu[mode].push(inputValue);
     setItem(this.menu);
     render();
     // 메뉴 추가 후 input창 빈값으로 초기화
     $("#espresso-menu-input").value = "";
-    console.log(menu)
-
+    console.log(this.menu);
   };
 
   // 메뉴 수정
   const modifyMenu = (e) => {
     const menuName = e.target.closest("li").querySelector(".menu-name");
-    const menuId = e.target.closest("li").id
+    const menuId = e.target.closest("li").id;
     const modifiedMenu = prompt("메뉴명을 수정해주세요", menuName.innerText);
-    if (modifiedMenu == null) {
+    if (modifiedMenu == null || modifiedMenu == "") {
       return;
     }
-    this.menu[menuId].name = modifiedMenu;
+    this.menu[mode][menuId] = modifiedMenu;
     menuName.innerText = modifiedMenu;
     setItem(this.menu);
   };
@@ -84,8 +100,8 @@ function App() {
   // 메뉴 삭제
   const removeMenu = (e) => {
     if (confirm("일정을 삭제하시겠습니까?")) {
-      const menuId = e.target.closest("li").id  
-      this.menu.splice(menuId, 1);
+      const menuId = e.target.closest("li").id;
+      this.menu[mode].splice(menuId, 1);
       setItem(this.menu);
       e.target.closest("li").remove();
       updateMenuCount();
@@ -115,10 +131,28 @@ function App() {
       addMenu();
     }
   });
+
+  // nav 메뉴 이벤트 첫번째 방법 : 위임
+  // $("nav").addEventListener("click", (e) => {
+  //   if (e.target.classList.contains("cafe-category-name")) {
+  //     selectCategory(e);
+  //   }
+  // })
+  // nav 메뉴 이벤트 두번째 방법 : forEach 각각 이벤트
   
+  const categorys = document.querySelectorAll("nav button");
+  categorys.forEach((category) => {
+    category.addEventListener("click", (e) => {
+      $("#menu-title h2").innerHTML = `${e.target.innerText} 메뉴 관리`
+      const category = e.target.dataset.categoryName
+      mode = category;
+      render();
+    });
+  });
+
   // 새로고침 랜더링 로컬스토리지에서 가져오기
-  let savedMenu = localStorage.getItem('menu')
-  parsedMenu = JSON.parse(savedMenu)
+  let savedMenu = localStorage.getItem("menu");
+  parsedMenu = JSON.parse(savedMenu);
   if (parsedMenu !== null) {
     this.menu = parsedMenu;
     render();
