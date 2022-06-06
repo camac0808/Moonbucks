@@ -152,7 +152,7 @@ h2 {
                               FOOTER
 =========================================================--> */
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 576px) {
   .cafe-category-name {
     font-size: 14px;
   }
