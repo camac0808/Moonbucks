@@ -17,6 +17,7 @@ h1 {
 .input-form{
   display: flex;
   justify-content: space-between;
+  margin-top: 10px;
 }
 
 .input-form input {
@@ -48,7 +49,7 @@ h1 {
   background-color: #2EE59D;
   box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
   color: #fff;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   transition: all 0.3s ease 0s;
   cursor: pointer;
 }
@@ -67,7 +68,7 @@ h1 {
   background-color: rgb(248, 232, 201);
   box-shadow: 0px 15px 20px rgba(248, 232, 201, 0.4);
   color: #000;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   transition: all 0.3s ease 0s;
   cursor: pointer;
 } 
@@ -86,7 +87,7 @@ main .wrapper {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border-radius: 4px;
-  padding: 20px 30px 20px 20px;
+  padding: 10px 30px 20px 20px;
 }
 
 hr {
@@ -112,7 +113,7 @@ ul li button:hover {
   background-color: aliceblue;
   box-shadow: 0px 15px 20px rgba(100, 100, 100, 0.4);
   color: #000;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   transition: all 0.3s ease 0s;
   cursor: pointer;
 }
@@ -131,6 +132,7 @@ h2 {
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  
 }
 
 #menu-title span {
@@ -139,6 +141,113 @@ h2 {
   margin-top: 0;
 }
 
+#menu-title button{
+  width: 100px;
+  padding: 5px 10px;
+  line-height: inherit;
+  cursor: pointer;
+  height: auto;
+  border: none;
+  outline: none;
+  border-radius: 2rem;  
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  margin-right: 5px;
+  font-weight: 600;
+}
+
+.shopping-button {
+  box-shadow: rgba(17, 17, 26, 0.5) 0px 4px 10px;
+  background-color: rgb(240, 240, 240);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  float: right;
+  padding: 11px 15px 13px 10px;
+  margin-left: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.shopping-button img{
+  width: 35px;
+  height: 35px;
+}
+
+/* Tooltip text */
+
+.tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 8px 5px;
+  border-radius: 6px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+  left: 115%;
+  bottom: 50%;
+}
+
+.tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%; /* To the left of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.shopping-button:hover .tooltiptext {
+  visibility: visible;
+}
+
+.shopping-button:hover {
+  background-color: aliceblue;
+  box-shadow: 0px 15px 20px rgba(180, 230, 230, 0.6);
+  transform: translateY(-1px);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+}
+
+.add-shop-button {
+  display: block;
+  float: right;
+  cursor: pointer;
+  line-height: 40px;
+  width: 191px;
+  height: 42px;
+  background: transparent;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  background-color: rgb(240, 240, 240);
+  border: none;
+  border-radius: 2rem;  
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+.add-shop-button:hover{
+  background-color: aliceblue;
+  box-shadow: 0px 15px 20px rgba(180, 230, 230, 0.6);
+  color: #000;
+  transform: translateY(-1px);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+}
+
+a:last-child {
+  position: absolute;
+  bottom: 0;
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
 
 /* <!--========================================================
                               HEADER
