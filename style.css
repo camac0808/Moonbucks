@@ -241,7 +241,7 @@ h2 {
 
 a:last-child {
   position: absolute;
-  bottom: 0;
+  top: 0;
   font-size: 12px;
 }
 

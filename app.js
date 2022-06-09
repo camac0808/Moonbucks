@@ -1,9 +1,60 @@
-
 const $ = (selector) => document.querySelector(selector);
+const URL = "http://localhost:3000/api";
 
-const URL = 'http://localhost:3000/api';
-fetch(URL, option);
-
+const MenuApi = {
+  async setMenu(category, name) {
+    const response = await fetch(`${URL}/category/${category}/menu`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        soldOut: false,
+        shopping: false,
+      }),
+    });
+    if (!response.ok) {
+      console.error(response, "에러가 발생했습니다");
+    }
+  },
+  async getAllMenuByCategory(category) {
+    const response = await fetch(`${URL}/category/${category}/menu`);
+    return response.json();
+  },
+  async updateMenu(category, name, menuId) {
+    const response = await fetch(`${URL}/category/${category}/menu/${menuId}`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        soldOut: false,
+        shopping: false,
+      })
+    })
+    if (!response.ok) {
+      console.error(response, "에러가 발생했습니다");
+    }
+  },
+  async toggleSoldOutMenu(category, menuId) {
+    const response = await fetch(`${URL}/category/${category}/menu/${menuId}/soldout`, {
+      method: 'PUT',
+    })
+    if (!response.ok) {
+      console.error(response, "에러가 발생했습니다");
+    }
+  },
+  async deleteMenu(category, menuId){
+    const response = await fetch(`${URL}/category/${category}/menu/${menuId}`, {
+      method: 'DELETE',
+    })
+    if (!response.ok) {
+      console.error(response, "에러가 발생했습니다");
+    }
+  }
+};
 
 function App() {
   this.menu = {
@@ -16,17 +67,14 @@ function App() {
   };
   this.mode = "espresso";
 
-  let setItem = (menu) => {
-    localStorage.setItem("menu", JSON.stringify(this.menu));
-  };
+  // let setItem = (menu) => {
+  //   localStorage.setItem("menu", JSON.stringify(this.menu));
+  // };
 
   // 새로고침시 로컬스토리지에서 정보를 가져와서 랜더링 해준다
-  let getItem = (menu) => {
-    parsedMenu = JSON.parse(localStorage.getItem("menu"));
-    if (parsedMenu !== null) {
-      this.menu = parsedMenu;
-      render();
-    }
+  let getItem = async (menu) => {
+    this.menu[this.mode] = await MenuApi.getAllMenuByCategory(this.mode);
+    render();
   };
 
   // count 세기
@@ -39,8 +87,8 @@ function App() {
     // 현재 선택한 mode(tab)의 값을 랜더링한다
     const template = menu[this.mode]
       .map((item, index) => {
-        return `<li id="${index}" class="menu-list-item d-flex items-center py-2">
-  <span class="${item.soldOut ? "sold-out" : ""} w-100 pl-2 menu-name">${
+        return `<li id="${item.id}" class="menu-list-item d-flex items-center py-2">
+  <span class="${item.isSoldOut ? "sold-out" : ""} w-100 pl-2 menu-name">${
           item.name
         }</span>
   <button type="button" class="${
@@ -72,8 +120,8 @@ function App() {
     updateMenuCount();
   };
 
-  // 메뉴 추가 함수
-  const addMenu = () => {
+  // 메뉴 추가
+  const addMenu = async () => {
     // 공백 입력시 함수가 끝나게 한다
     let blank_pattern = /^\s+|\s+$/g;
     if ($("#menu-input").value.replace(blank_pattern, "") === "") {
@@ -86,60 +134,54 @@ function App() {
       alert("Please enter the menu");
       return;
     }
-    // 입력값이 정상일 경우
+
     const inputValue = $("#menu-input").value;
-    this.menu[this.mode].push({
-      name: inputValue,
-      soldOut: false,
-      shopping: false,
-    });
-    setItem(this.menu);
-    render();
-    // 메뉴 추가 후 input창 빈값으로 초기화
+    await MenuApi.setMenu(this.mode, inputValue);
+    getItem();
     $("#menu-input").value = "";
-    console.log(this.menu);
   };
 
   // 메뉴 품절
-  const soldoutMenu = (e) => {
+  const soldoutMenu = async (e) => {
     const menuId = e.target.closest("li").id;
     // 객체 안에 지정안해도 작동한다. undefined의 부정은 true이므로
-    this.menu[this.mode][menuId].soldOut =
-      !this.menu[this.mode][menuId].soldOut;
-    setItem(this.menu);
-    render();
+    // this.menu[this.mode][menuId].soldOut =
+    //   !this.menu[this.mode][menuId].soldOut;
+    await MenuApi.toggleSoldOutMenu(this.mode, menuId);
+    getItem();
   };
 
   // 메뉴 수정
-  const modifyMenu = (e) => {
+  const modifyMenu = async (e) => {
     const menuName = e.target.closest("li").querySelector("span");
     const menuId = e.target.closest("li").id;
     const modifiedMenu = prompt("메뉴명을 수정해주세요", menuName.innerText);
     if (modifiedMenu == null || modifiedMenu == "") {
       return;
     }
+    // 새로 수정한 내역을 서버에 업데이트 해준다
+    await MenuApi.updateMenu(this.mode, modifiedMenu, menuId);
     // menu에 저장안하면 새로고침시 리셋된다
-    this.menu[this.mode][menuId].name = modifiedMenu;
-    setItem(this.menu);
-    render();
+    getItem();
   };
 
   // 메뉴 삭제
-  const removeMenu = (e) => {
+  const removeMenu = async (e) => {
     if (confirm("일정을 삭제하시겠습니까?")) {
       const menuId = e.target.closest("li").id;
-      this.menu[this.mode].splice(menuId, 1);
-      setItem(this.menu);
-      e.target.closest("li").remove();
-      render();
+      // this.menu[this.mode].splice(menuId, 1);
+      // setItem(this.menu);
+      // e.target.closest("li").remove();
+      // render();
+      await MenuApi.deleteMenu(this.mode, menuId);
+      getItem();
     }
   };
 
   // 메뉴 모두 삭제
   $(".delete-all-button").addEventListener("click", () => {
     this.menu[this.mode].splice(0, this.menu[this.mode].length);
-    setItem(this.menu);
-    render();
+    getItem();
   });
 
   // form태그에 submit할때 새로고침현상 제거
@@ -186,13 +228,13 @@ function App() {
   const showInputForm = () => {
     $(".input-form").classList.remove("hidden");
     $(".add-shop-button").classList.remove("hidden");
-  }
+  };
   // 카테고리별 분류 및 랜더링 작업
   const categorys = document.querySelectorAll("nav button");
   categorys.forEach((category) => {
-    category.addEventListener("click", (e) => {
+    category.addEventListener("click", async (e) => {
       if (e.target.dataset.categoryName === "cart") {
-        $("#menu-title h2").innerText = `🛒 장바구니 관리`;
+        $("#menu-title h2").innerText = `🛒 장1바구니 관리`;
         hideInputForm();
       } else if (e.target.dataset.categoryName !== "cart") {
         $("#menu-title h2").innerText = `${e.target.innerText} 메뉴 관리`;
@@ -200,33 +242,36 @@ function App() {
       }
       const category = e.target.dataset.categoryName;
       this.mode = category;
+      // 서버에서 가져와서 다시 넣어주는 이유 : 처음엔 그냥 입력하고 랜더링 되겠지만 새로고침하면 데이터가 다 사라지므로 다시 넣어주는 작업이다
       console.log(this.mode);
-      render();
+      getItem();
     });
   });
 
   // 장바구니 담기
-  $(".add-shop-button").addEventListener("click", (e) => {
-    // 품절된 메뉴는 제외
-    if (this.menu[this.mode] !== "cart") {
-      let alertMenu = [];
-      let filterMenu = this.menu[this.mode].filter((item) => {
-        return item.soldOut === true;
-      });
-      let shoppingMenu = this.menu[this.mode].filter((item) => {
-        return item.soldOut === false;
-      });
-      shoppingMenu.forEach((item) => {
-        item.shopping = true;
-        this.menu.cart.push(item);
-        alertMenu.push(item.name);
-      });
-      alert(`${alertMenu} 들을 장바구니에 담으시겠습니까?`);
-      this.menu[this.mode] = filterMenu;
-      setItem(this.menu);
-      render();
-    }
-  });
+  // $(".add-shop-button").addEventListener("click", async (e) => {
+  //   // 품절된 메뉴는 제외
+  //   if (this.menu[this.mode] !== "cart") {
+  //     let alertMenu = [];
+  //     let filterMenu = this.menu[this.mode].filter((item) => {
+  //       return item.soldOut === true;
+  //     });
+  //     let shoppingMenu = this.menu[this.mode].filter((item) => {
+  //       return item.soldOut === false;
+  //     });
+  //     shoppingMenu.forEach((item) => {
+  //       item.shopping = true;
+  //       this.menu.cart.push(item);
+  //       alertMenu.push(item.name);
+  //     });
+  //     alert(`${alertMenu} 들을 장바구니에 담으시겠습니까?`);
+  //     await MenuApi.setMenu(this.mode, filterMenu);
+  //     this.menu[this.mode] = await MenuApi.getAllMenuByCategory(this.mode);
+  //     await MenuApi.setMenu(this.menu.cart, shoppingMenu);
+  //     this.menu.cart = await MenuApi.getAllMenuByCategory(this.menu.cart);
+  //     render(); 
+  //   }
+  // });
 
   getItem(this.menu);
 }
