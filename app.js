@@ -15,10 +15,12 @@ const MenuApi = {
       console.error(response, "에러가 발생했습니다");
     }
   },
+
   async getAllMenuByCategory(category) {
     const response = await fetch(`${URL}/category/${category}/menu`);
     return response.json();
   },
+  
   async updateMenu(category, name, menuId) {
     const response = await fetch(`${URL}/category/${category}/menu/${menuId}`, {
       method: "PUT",
